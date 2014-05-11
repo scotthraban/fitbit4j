@@ -1730,7 +1730,60 @@ public class FitbitApiClientAgent extends FitbitAPIClientSupport implements Seri
         }
 
     }
+    
+    /**
+     * Get user's water goal with the given id
+     * 
+     * @param localUser authorized user
+     * @param fitbitUser user to retrieve data from
+     * 
+     * @throws com.fitbit.api.FitbitAPIException Fitbit API Exception
+     * @see <a href="http://wiki.fitbit.com/display/API/API-Get-Water-Goal">Fitbit API: API-Get-Water-Goal</a>
+     */
+    public WaterGoal getWaterGoal(LocalUserDetail localUser, FitbitUser fitbitUser) throws FitbitAPIException {
+        setAccessToken(localUser);
+        // Example: GET /1/user/-/foods/log/water/goal.json
+        String url = APIUtil.contextualizeUrl(getApiBaseUrl(), getApiVersion(), "/user/" + fitbitUser.getId() + "/foods/log/water/goal", APIFormat.JSON);
 
+        Response res = httpGet(url, true);
+        throwExceptionIfError(res);
+        try {
+            return new WaterGoal(res.asJSONObject().getJSONObject("goal"));
+        } catch (JSONException e) {
+            throw new FitbitAPIException("Error retrieving water: " + e, e);
+        }
+    }
+    
+    /**
+     * Update user's water goal
+     *
+     * @param localUser authorized user
+     * @param fitbitUser user to retrieve data from
+     * @param goal water goal to update with
+     *
+     * @return updated water goal of user
+     *
+     * @throws com.fitbit.api.FitbitAPIException Fitbit API Exception
+     * @see <a href="http://wiki.fitbit.com/display/API/API-Update-Water-Goal">Fitbit API: API-Update-Water-Goal</a>
+     */
+    public WaterGoal updateWaterGoal(LocalUserDetail localUser, FitbitUser fitbitUser, double goal) throws FitbitAPIException {
+        setAccessToken(localUser);
+        // Example: POST /1/user/-/foods/log/water/goal.json
+        String url = APIUtil.contextualizeUrl(getApiBaseUrl(), getApiVersion(), "/user/" + fitbitUser.getId() + "/foods/log/water/goal", APIFormat.JSON);
+
+        try {
+            List<PostParameter> params = new ArrayList<PostParameter>();
+            params.add(new PostParameter("target", Double.valueOf(goal).toString()));
+
+            Response response = httpPost(url, params.toArray(new PostParameter[params.size()]), true);
+            throwExceptionIfError(response);
+            return new WaterGoal(response.asJSONObject().getJSONObject("goal"));
+        } catch (FitbitAPIException e) {
+            throw new FitbitAPIException("Error updating water goal: " + e, e);
+        } catch (JSONException e) {
+            throw new FitbitAPIException("Error updating water goal: " + e, e);
+        }
+    }
 
     /**
      * Create log entry for a blood pressure measurement
