@@ -69,9 +69,9 @@ public class UserInfo {
 
         weightUnit = userJson.optString("weightUnit");
         distanceUnit = userJson.optString("distanceUnit");
-        heightUnit = userJson.optString("weightUnit");
-        waterUnit = userJson.optString("weightUnit");
-        glucoseUnit = userJson.optString("weightUnit");
+        heightUnit = userJson.optString("heightUnit");
+        waterUnit = userJson.optString("waterUnit");
+        glucoseUnit = userJson.optString("glucoseUnit");
     }
 
     public static List<UserInfo> friendJsonArrayToUserInfoList(JSONArray array) throws JSONException {
